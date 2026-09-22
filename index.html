@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>奈良女子大学附属中等教育学校 鉄道同好会</title>
     
+    <!-- 🔐 簡易パスワード機能（友達だけに公開する設定） -->
+    <script>
+        var password = prompt("パスワードを入力してください：\n（同好会のメンバーに聞いてね）");
+        // 指定されたパスワード「NWUSS-railway-2026-1007」に設定しました
+        if (password !== "NWUSS-railway-2026-1007") { 
+            alert("パスワードが違います。ページを表示できません。");
+            window.location.href = "about:blank"; // 間違えたら真っ白な画面にする
+        }
+    </script>
+
     <style>
         /* サイト全体の文字と背景 */
         body {
