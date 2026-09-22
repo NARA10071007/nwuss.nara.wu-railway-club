@@ -5,214 +5,163 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>奈良女子大学附属中等教育学校 鉄道同好会</title>
     
-    <!-- 🔐 高度なパスワード・ロック＆隠しコマンド機能 -->
     <script>
         (function() {
+            // 🚨 【最優先】ブラウザに残っているバグの記憶（キャッシュ）を強制リセット
+            if (!sessionStorage.getItem("cached_cleared_v2")) {
+                localStorage.clear();
+                sessionStorage.clear();
+                sessionStorage.setItem("cached_cleared_v2", "true");
+                location.reload();
+                return;
+            }
+
             const CORRECT_PW = "NWUSS-railway-2026-1007";
-            
-            // 状態を記憶
             let attempt = parseInt(localStorage.getItem("railway_attempt") || "0");
             let lockTime = localStorage.getItem("railway_lock_time");
+            let isLocked = false;
 
-            // 1分間のロック中かチェック
             if (lockTime) {
                 let timeLeft = 60000 - (Date.now() - parseInt(lockTime));
                 if (timeLeft > 0) {
-                    alert("パスワードを2回間違えたため、1分間ロックされています。しばらくお待ちください。");
-                    window.location.href = "about:blank";
-                    return;
+                    isLocked = true;
                 } else {
                     localStorage.removeItem("railway_lock_time");
                 }
             }
 
-            // 3回以上間違えている（永久ロック状態）
-            if (attempt >= 3) {
-                // 画面を真っ白にするための処理
+            // 強制解除ポップアップ関数
+            function triggerResetDialog() {
+                let cmd = prompt("EBリセット。ロック解除キーを入力してください：");
+                if (cmd === "a+railway" || cmd === "arailway" || cmd === "railway") {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    alert("安全確認。運行を再開します。");
+                    location.reload();
+                } else {
+                    location.reload();
+                }
+            }
+
+            // ロック画面（真っ白画面）の処理
+            if (attempt >= 3 || isLocked) {
+                document.write(`
+                    <body style="margin:0; padding:0; background:white;">
+                        <div id="secret-lock-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; display:flex; flex-direction:column; justify-content:center; align-items:center; user-select:none; -webkit-user-select:none; touch-action:none; z-index:99999;">
+                            <div id="buzzer-text" style="color:red; font-weight:bold; font-size:2rem; margin-bottom:20px; display:none; animation: blink 0.5s infinite; font-family:sans-serif;">⚠️ 非常ブレーキ作動中 ⚠️</div>
+                        </div>
+                        <style>@keyframes blink { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }</style>
+                    </body>
+                `);
+
                 window.addEventListener('DOMContentLoaded', () => {
-                    document.body.innerHTML = ""; 
-                    document.body.style.backgroundColor = "white";
-                });
-                
-                // 🛠️ 隠しコマンドの受付（永久ロック画面の時だけ有効）
-                let inputSequence = "";
-                window.addEventListener('keydown', (e) => {
-                    // 「a」キーを押しながら「r, a, i, l, w, a, y」と順番にタイピングするのを検知
-                    if (e.altKey || e.ctrlKey || e.metaKey) return; // 特殊キーは除外
-                    
-                    // 「a」を押しながら他の文字を打つ、または順番に入力されたかを判定
-                    if (e.key.toLowerCase() === 'a' && e.shiftKey === false) {
-                        inputSequence += 'a';
-                    } else if (['r','i','l','w','y'].includes(e.key.toLowerCase())) {
-                        inputSequence += e.key.toLowerCase();
-                    }
-                    
-                    // 「aを押しながらrailway」の文字要素が揃ったかチェック（大文字小文字無視）
-                    // 簡単に判定するため、ロック中に「a」を押しながら、またはキーボードで「arailway」と正しく打ち込まれたかを検知します
-                    if (e.key.toLowerCase() === 'y' && (inputSequence.includes('a') && inputSequence.includes('r') && inputSequence.includes('i') && inputSequence.includes('l') && inputSequence.includes('w'))) {
-                        let cmd = prompt("隠しコマンドを入力してください：");
-                        if (cmd === "a+railway" || cmd === "arailway" || cmd === "railway") {
-                            localStorage.setItem("railway_attempt", "0");
-                            localStorage.removeItem("railway_lock_time");
-                            alert("ロックが解除されました！ページを再読み込みします。");
-                            location.reload();
+                    const screen = document.getElementById('secret-lock-screen');
+                    const buzzerText = document.getElementById('buzzer-text');
+                    let firstPressTimer = null;
+                    let buzzerTimer = null;
+                    let isBuzzerActive = false;
+
+                    // PC用キーボード：aを押しながらrailway
+                    let inputSequence = "";
+                    window.addEventListener('keydown', (e) => {
+                        if (e.altKey || e.ctrlKey || e.metaKey) return;
+                        if (e.key.toLowerCase() === 'a' && e.shiftKey === false) {
+                            inputSequence += 'a';
+                        } else if (['r','i','l','w','y'].includes(e.key.toLowerCase())) {
+                            inputSequence += e.key.toLowerCase();
+                        }
+                        if (e.key.toLowerCase() === 'y' && (inputSequence.includes('a') && inputSequence.includes('r') && inputSequence.includes('i') && inputSequence.includes('l') && inputSequence.includes('w'))) {
+                            triggerResetDialog();
+                        }
+                    });
+
+                    // スマホ用：どこでも2本指で5秒長押し
+                    function startFirstPress(e) {
+                        if (isBuzzerActive) return;
+                        let isMultiTouch = (e.touches && e.touches.length >= 2);
+                        let isPcClick = (!e.touches);
+
+                        if (isMultiTouch || isPcClick) {
+                            firstPressTimer = setTimeout(() => {
+                                isBuzzerActive = true;
+                                buzzerText.style.display = "block";
+                                if (navigator.vibrate) navigator.vibrate(); 
+
+                                buzzerTimer = setTimeout(() => {
+                                    alert("解除失敗：EB装置が作動しました。");
+                                    location.reload();
+                                }, 3000);
+                            }, 5000); // 5秒
                         }
                     }
+
+                    function endFirstPress() { if (firstPressTimer) clearTimeout(firstPressTimer); }
+
+                    let secondPressTimer = null;
+                    function startSecondPress() {
+                        if (!isBuzzerActive) return;
+                        secondPressTimer = setTimeout(() => {
+                            clearTimeout(buzzerTimer);
+                            triggerResetDialog();
+                        }, 1000); 
+                    }
+
+                    screen.addEventListener('touchstart', startFirstPress);
+                    screen.addEventListener('touchend', endFirstPress);
+                    screen.addEventListener('mousedown', startFirstPress);
+                    screen.addEventListener('mouseup', endFirstPress);
+                    screen.addEventListener('touchstart', startSecondPress);
+                    screen.addEventListener('touchend', secondPressTimer);
+                    screen.addEventListener('mousedown', startSecondPress);
                 });
-                
-                alert("パスワードを間違えすぎたため、このページにはもうアクセスできません。");
+
+                if (isLocked) {
+                    alert("パスワードを2回間違えたため、1分間ロックされています。");
+                } else {
+                    alert("パスワードを間違えすぎたため、このページにはもうアクセスできません。");
+                }
                 return;
             }
 
-            // パスワード入力の処理
-            function askPassword() {
-                if (attempt === 2) {
-                    alert("これが最後のチャンスです。慎重に入力してください。");
-                }
-
-                let password = prompt("パスワードを入力してください：\n（同好会のメンバーに聞いてね）");
+            // 通常時
+            let password = prompt("パスワードを入力してください：\n（同好会のメンバーに聞いてね）");
+            
+            if (password === CORRECT_PW) {
+                localStorage.setItem("railway_attempt", "0");
                 
-                if (password === CORRECT_PW) {
-                    localStorage.setItem("railway_attempt", "0");
-                } else {
-                    attempt++;
-                    localStorage.setItem("railway_attempt", attempt.toString());
-
-                    if (attempt === 2) {
-                        localStorage.setItem("railway_lock_time", Date.now().toString());
-                        alert("パスワードが2回違います。1分間ロックします。");
-                        window.location.href = "about:blank";
-                    } else if (attempt >= 3) {
-                        alert("パスワードが違います。アクセス権が失われました。");
-                        location.reload(); // 再読み込みして真っ白画面にする
-                    } else {
-                        alert("パスワードが違います。残りのチャンスはあと1回です。");
-                        askPassword();
-                    }
-                }
-            }
-
-            askPassword();
-        })();
-    </script>
-
-    <style>
-        /* サイト全体の文字と背景 */
-        body {
-            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', メイリオ, sans-serif;
-            line-height: 1.8;
-            color: #333;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* ヘッダー：駅名標風デザイン */
-        header {
-            background-color: #00539c; 
-            color: white;
-            text-align: center;
-            padding: 50px 20px;
-            border-bottom: 8px solid #a3d1ff; 
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 2.2rem;
-            letter-spacing: 2px;
-        }
-
-        header p {
-            margin: 10px 0 0 0;
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-
-        /* メインの文章部分 */
-        main {
-            max-width: 800px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        /* 各セクションの枠 */
-        section {
-            background: white;
-            padding: 30px;
-            margin-bottom: 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-
-        h2 {
-            color: #00539c;
-            border-left: 6px solid #00539c; 
-            padding-left: 12px;
-            margin-top: 0;
-            font-size: 1.5rem;
-        }
-
-        h3 {
-            color: #e67e22; 
-            font-size: 1.2rem;
-            margin-top: 20px;
-        }
-
-        /* 箇条書き */
-        ul {
-            padding-left: 20px;
-        }
-
-        li {
-            margin-bottom: 12px;
-        }
-
-        /* 注意書き用のグレーのボックス */
-        .notice-box {
-            background-color: #f9f9f9;
-            border-left: 4px solid #95a5a6;
-            padding: 15px;
-            margin-top: 20px;
-            font-size: 0.9rem;
-            color: #555;
-        }
-
-        /* フッター */
-        footer {
-            text-align: center;
-            padding: 30px;
-            color: #777;
-            font-size: 0.9rem;
-        }
-    </style>
-</head>
+                document.write(`
+<style>
+    body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', メイリオ, sans-serif; line-height: 1.8; color: #333; background-color: #f4f7f6; margin: 0; padding: 0; }
+    header { background-color: #00539c; color: white; text-align: center; padding: 50px 20px; border-bottom: 8px solid #a3d1ff; }
+    header h1 { margin: 0; font-size: 2.2rem; letter-spacing: 2px; }
+    header p { margin: 10px 0 0 0; font-size: 1.1rem; opacity: 0.9; }
+    main { max-width: 800px; margin: 30px auto; padding: 0 20px; }
+    section { background: white; padding: 30px; margin-bottom: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    h2 { color: #00539c; border-left: 6px solid #00539c; padding-left: 12px; margin-top: 0; font-size: 1.5rem; }
+    h3 { color: #e67e22; font-size: 1.2rem; margin-top: 20px; }
+    ul { padding-left: 20px; }
+    li { margin-bottom: 12px; }
+    .notice-box { background-color: #f9f9f9; border-left: 4px solid #95a5a6; padding: 15px; margin-top: 20px; font-size: 0.9rem; color: #555; }
+    footer { text-align: center; padding: 30px; color: #777; font-size: 0.9rem; }
+</style>
 <body>
-
-    <!-- ヘッダー -->
     <header>
         <h1>奈良女子大学附属中等教育学校<br>鉄道同好会</h1>
         <p>〜 ゆる〜く、楽しく、活動しております 〜</p>
     </header>
-
-    <!-- メインコンテンツ -->
     <main>
-        <!-- 同好会について -->
         <section>
             <h2>同好会について</h2>
             <p>当同好会には、<strong>模型・乗り・描き・音・路線図etc...</strong> といった、多種多様な好みをお持ちの方々がいらっしゃいます。</p>
             <p>なんと、「ジオラマを作りたい！」ということで入会してくださった方もいます。鉄道に詳しくない方、それほど趣味ではないという方も大歓迎です！気になった方は、ぜひお友達等と一緒に見学へお越しください！</p>
         </section>
-
-        <!-- 主な活動内容 -->
         <section>
             <h2>主な活動内容</h2>
             <ul>
                 <li><strong>定期集会（月1〜2回）：</strong> Nゲージを走らせたり、最近の鉄道各社の情報を共有したりしています。</li>
-                <li><strong>イベント出展の準備：</strong> 学園祭や、8月に行われる「鉄道模型コンテスト（レイアウトや車両の制作を競う大会）」に出展するため、ただいま誠意製作中です！ジオラマを作ってみたいという方もぜひご検討ください。</li>
+                <li><strong>イベント出展の準備：</strong> 学園祭や、8月に行われる「鉄道模型コンテスト」に出展するため、ただいま誠意製作中です！ジオラマを作ってみたいという方もぜひご検討ください。</li>
             </ul>
         </section>
-
-        <!-- 注目プロジェクト -->
         <section>
             <h2>📢 大注目プロジェクト始動！</h2>
             <h3>「奈良から関西国際空港へ直通する、同好会オリジナルの鉄道会社」を製作開始！</h3>
@@ -223,26 +172,40 @@
             </ul>
             <p>「模型というより、ジオラマ製作といった感じでしょうか？」—— 鉄道がそれほど好きではないという方も、ものづくりとして楽しめるプロジェクトになっています！</p>
         </section>
-
-        <!-- 募集要項・ルール -->
         <section>
             <h2>募集要項・よくある質問</h2>
             <ul>
                 <li>💰 <strong>会費：</strong> 年600円</li>
                 <li>🔰 <strong>初心者大歓迎：</strong> 鉄道の知識がなくても全く大丈夫です！</li>
             </ul>
-
             <div class="notice-box">
                 <strong>⚠️ 交通費に関する大切なお知らせ：</strong><br>
                 同好会の会員で鉄道に乗りに行く場合、会費から交通費は出ません（個人旅行という名目で行っているためです）。会費によって格安で鉄道に乗れるというわけでは御座いませんので、あらかじめご了承下さい。
             </div>
         </section>
     </main>
-
-    <!-- フッター -->
     <footer>
         <p>&copy; 2026 奈良女子大学附属中等教育学校 鉄道同好会</p>
     </footer>
-
 </body>
+                `);
+            } else {
+                attempt++;
+                localStorage.setItem("railway_attempt", attempt.toString());
+
+                if (attempt === 2) {
+                    localStorage.setItem("railway_lock_time", Date.now().toString());
+                    alert("パスワードが2回違います。1分間ロックします。");
+                    location.reload(); 
+                } else if (attempt >= 3) {
+                    alert("パスワードが違います。アクセス権が失われました。");
+                    location.reload(); 
+                } else {
+                    alert("パスワードが違います。残りのチャンスはあと1回です。");
+                    location.reload(); 
+                }
+            }
+        })();
+    </script>
+</head>
 </html>
