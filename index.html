@@ -5,14 +5,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>奈良女子大学附属中等教育学校 鉄道同好会</title>
     
-    <!-- 🔐 簡易パスワード機能（友達だけに公開する設定） -->
+    <!-- 🔐 高度なパスワード・ロック＆隠しコマンド機能 -->
     <script>
-        var password = prompt("パスワードを入力してください：\n（誰かに聞いて）");
-        // 指定されたパスワード「NWUSS-railway-2026-1007」に設定しました
-        if (password !== "NWUSS-railway-2026-1007") { 
-            alert("パスワードが違います。ページを表示できません。");
-            window.location.href = "about:blank"; // 間違えたら真っ白な画面にする
-        }
+        (function() {
+            const CORRECT_PW = "NWUSS-railway-2026-1007";
+            
+            // 状態を記憶
+            let attempt = parseInt(localStorage.getItem("railway_attempt") || "0");
+            let lockTime = localStorage.getItem("railway_lock_time");
+
+            // 1分間のロック中かチェック
+            if (lockTime) {
+                let timeLeft = 60000 - (Date.now() - parseInt(lockTime));
+                if (timeLeft > 0) {
+                    alert("パスワードを2回間違えたため、1分間ロックされています。しばらくお待ちください。");
+                    window.location.href = "about:blank";
+                    return;
+                } else {
+                    localStorage.removeItem("railway_lock_time");
+                }
+            }
+
+            // 3回以上間違えている（永久ロック状態）
+            if (attempt >= 3) {
+                // 画面を真っ白にするための処理
+                window.addEventListener('DOMContentLoaded', () => {
+                    document.body.innerHTML = ""; 
+                    document.body.style.backgroundColor = "white";
+                });
+                
+                // 🛠️ 隠しコマンドの受付（永久ロック画面の時だけ有効）
+                let inputSequence = "";
+                window.addEventListener('keydown', (e) => {
+                    // 「a」キーを押しながら「r, a, i, l, w, a, y」と順番にタイピングするのを検知
+                    if (e.altKey || e.ctrlKey || e.metaKey) return; // 特殊キーは除外
+                    
+                    // 「a」を押しながら他の文字を打つ、または順番に入力されたかを判定
+                    if (e.key.toLowerCase() === 'a' && e.shiftKey === false) {
+                        inputSequence += 'a';
+                    } else if (['r','i','l','w','y'].includes(e.key.toLowerCase())) {
+                        inputSequence += e.key.toLowerCase();
+                    }
+                    
+                    // 「aを押しながらrailway」の文字要素が揃ったかチェック（大文字小文字無視）
+                    // 簡単に判定するため、ロック中に「a」を押しながら、またはキーボードで「arailway」と正しく打ち込まれたかを検知します
+                    if (e.key.toLowerCase() === 'y' && (inputSequence.includes('a') && inputSequence.includes('r') && inputSequence.includes('i') && inputSequence.includes('l') && inputSequence.includes('w'))) {
+                        let cmd = prompt("隠しコマンドを入力してください：");
+                        if (cmd === "a+railway" || cmd === "arailway" || cmd === "railway") {
+                            localStorage.setItem("railway_attempt", "0");
+                            localStorage.removeItem("railway_lock_time");
+                            alert("ロックが解除されました！ページを再読み込みします。");
+                            location.reload();
+                        }
+                    }
+                });
+                
+                alert("パスワードを間違えすぎたため、このページにはもうアクセスできません。");
+                return;
+            }
+
+            // パスワード入力の処理
+            function askPassword() {
+                if (attempt === 2) {
+                    alert("これが最後のチャンスです。慎重に入力してください。");
+                }
+
+                let password = prompt("パスワードを入力してください：\n（同好会のメンバーに聞いてね）");
+                
+                if (password === CORRECT_PW) {
+                    localStorage.setItem("railway_attempt", "0");
+                } else {
+                    attempt++;
+                    localStorage.setItem("railway_attempt", attempt.toString());
+
+                    if (attempt === 2) {
+                        localStorage.setItem("railway_lock_time", Date.now().toString());
+                        alert("パスワードが2回違います。1分間ロックします。");
+                        window.location.href = "about:blank";
+                    } else if (attempt >= 3) {
+                        alert("パスワードが違います。アクセス権が失われました。");
+                        location.reload(); // 再読み込みして真っ白画面にする
+                    } else {
+                        alert("パスワードが違います。残りのチャンスはあと1回です。");
+                        askPassword();
+                    }
+                }
+            }
+
+            askPassword();
+        })();
     </script>
 
     <style>
@@ -28,7 +109,7 @@
 
         /* ヘッダー：駅名標風デザイン */
         header {
-            background-color: #00539c; /* 鉄道をイメージした青色 */
+            background-color: #00539c; 
             color: white;
             text-align: center;
             padding: 50px 20px;
@@ -72,7 +153,7 @@
         }
 
         h3 {
-            color: #e67e22; /* 目立たせたいプロジェクト用のオレンジ */
+            color: #e67e22; 
             font-size: 1.2rem;
             margin-top: 20px;
         }
@@ -110,12 +191,11 @@
     <!-- ヘッダー -->
     <header>
         <h1>奈良女子大学附属中等教育学校<br>鉄道同好会</h1>
-        <p>〜???〜</p>
+        <p>〜 ゆる〜く、楽しく、活動しております 〜</p>
     </header>
 
     <!-- メインコンテンツ -->
     <main>
-        
         <!-- 同好会について -->
         <section>
             <h2>同好会について</h2>
@@ -134,7 +214,7 @@
 
         <!-- 注目プロジェクト -->
         <section>
-            <h2>プロジェクト始動！</h2>
+            <h2>📢 大注目プロジェクト始動！</h2>
             <h3>「奈良から関西国際空港へ直通する、同好会オリジナルの鉄道会社」を製作開始！</h3>
             <p>鉄道ファンだけでなく、誰もが楽しめる一大プロジェクトです。以下のような方も大活躍できます！</p>
             <ul>
@@ -146,19 +226,17 @@
 
         <!-- 募集要項・ルール -->
         <section>
-            <h2>募集要項</h2>
+            <h2>募集要項・よくある質問</h2>
             <ul>
                 <li>💰 <strong>会費：</strong> 年600円</li>
                 <li>🔰 <strong>初心者大歓迎：</strong> 鉄道の知識がなくても全く大丈夫です！</li>
             </ul>
 
-            <!-- 注意事項 -->
             <div class="notice-box">
                 <strong>⚠️ 交通費に関する大切なお知らせ：</strong><br>
                 同好会の会員で鉄道に乗りに行く場合、会費から交通費は出ません（個人旅行という名目で行っているためです）。会費によって格安で鉄道に乗れるというわけでは御座いませんので、あらかじめご了承下さい。
             </div>
         </section>
-
     </main>
 
     <!-- フッター -->
