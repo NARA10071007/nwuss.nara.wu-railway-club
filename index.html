@@ -7,25 +7,25 @@
     
     <script>
         (function() {
-            // 🚨 【最優先】ブラウザに残っているこれまでのロックバグの記憶を根こそぎ完全消去
+            // ブラウザのロック記憶を完全にクリアしてバグを防ぐ
             localStorage.clear();
             sessionStorage.clear();
 
             const CORRECT_PW = "NWUSS-railway-2026-1007";
             let attempt = 0;
 
-            // 🛠️ 強制解除用のポップアップを出す共通関数（PC・スマホ共通）
+            // ロック解除用の共通ダイヤログ
             function triggerResetDialog() {
                 let cmd = prompt("EBリセット。ロック解除キーを入力してください：");
                 if (cmd === "a+railway" || cmd === "arailway" || cmd === "railway") {
                     alert("安全確認。運行を再開します。");
                     location.reload();
                 } else {
-                    showLockScreen(true); // 間違えたらずっとロック
+                    showLockScreen(true);
                 }
             }
 
-            // 🔒 画面を真っ白なロック状態にする関数（location.reloadを使わないのでループしません）
+            // ロック画面（真っ白）を表示する関数
             function showLockScreen(isPermanent) {
                 document.body.innerHTML = `
                     <div id="secret-lock-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; display:flex; flex-direction:column; justify-content:center; align-items:center; user-select:none; -webkit-user-select:none; touch-action:none; z-index:99999;">
@@ -54,7 +54,7 @@
                     }
                 });
 
-                // 📱 スマホ用隠し操作：どこでも2本指で5秒長押し
+                // 📱 スマホ用隠し操作：画面どこでも2本指で5秒長押し
                 function startFirstPress(e) {
                     if (isBuzzerActive) return;
                     let isMultiTouch = (e.touches && e.touches.length >= 2);
@@ -70,7 +70,7 @@
                                 alert("解除失敗：EB装置が作動しました。");
                                 showLockScreen(true);
                             }, 3000);
-                        }, 5000); // 5秒間長押し
+                        }, 5000); // 5秒
                     }
                 }
 
@@ -99,14 +99,11 @@
                     alert("パスワードを間違えすぎたため、このページにはもうアクセスできません。");
                 } else {
                     alert("パスワードを2回間違えたため、現在一時ロックされています。");
-                    // 1分（60000秒）後に自動で最初からやり直すタイマー
-                    setTimeout(() => {
-                        location.reload();
-                    }, 60000);
+                    setTimeout(() => { location.reload(); }, 60000); // 1分後にリロード
                 }
             }
 
-            // 💡 最優先パスワード入力処理
+            // パスワード入力処理
             function askPassword() {
                 if (attempt === 2) {
                     alert("これが最後のチャンスです。慎重に入力してください。");
@@ -115,14 +112,16 @@
                 let password = prompt("パスワードを入力してください：\n（同好会のメンバーに聞いてね）");
                 
                 if (password === CORRECT_PW) {
-                    // 正解した時だけ、ページの中身を表示する処理へ進む
-                    window.addEventListener('DOMContentLoaded', showMainContent);
+                    // 正解したら、画面の非表示を解除する
+                    window.addEventListener('DOMContentLoaded', () => {
+                        document.getElementById('main-wrapper').style.display = 'block';
+                    });
                 } else {
                     attempt++;
                     if (attempt === 2) {
-                        showLockScreen(false); // 2回ミスで1分ロック画面へ
+                        showLockScreen(false);
                     } else if (attempt >= 3) {
-                        showLockScreen(true);  // 3回ミスで永久ロック画面へ
+                        showLockScreen(true);
                     } else {
                         alert("パスワードが違います。残りのチャンスはあと1回です。");
                         askPassword();
@@ -130,79 +129,150 @@
                 }
             }
 
-            // 💡 パスワードが正解した時だけ、同好会のHTMLを出力する関数
-            function showMainContent() {
-                document.body.innerHTML = `
-<style>
-    body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', メイリオ, sans-serif; line-height: 1.8; color: #333; background-color: #f4f7f6; margin: 0; padding: 0; }
-    header { background-color: #00539c; color: white; text-align: center; padding: 50px 20px; border-bottom: 8px solid #a3d1ff; }
-    header h1 { margin: 0; font-size: 2.2rem; letter-spacing: 2px; }
-    header p { margin: 10px 0 0 0; font-size: 1.1rem; opacity: 0.9; }
-    main { max-width: 800px; margin: 30px auto; padding: 0 20px; }
-    section { background: white; padding: 30px; margin-bottom: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-    h2 { color: #00539c; border-left: 6px solid #00539c; padding-left: 12px; margin-top: 0; font-size: 1.5rem; }
-    h3 { color: #e67e22; font-size: 1.2rem; margin-top: 20px; }
-    ul { padding-left: 20px; }
-    li { margin-bottom: 12px; }
-    .notice-box { background-color: #f9f9f9; border-left: 4px solid #95a5a6; padding: 15px; margin-top: 20px; font-size: 0.9rem; color: #555; }
-    footer { text-align: center; padding: 30px; color: #777; font-size: 0.9rem; }
-    .counter-area { text-align: center; margin-top: 15px; padding: 10px; background: #eee; border-radius: 6px; display: inline-block; min-width: 150px; }
-</style>
-    <header>
-        <h1>奈良女子大学附属中等教育学校<br>鉄道同好会</h1>
-        <p>〜 ゆる〜く、楽しく、活動しております 〜</p>
-    </header>
-    <main>
-        <section>
-            <h2>同好会について</h2>
-            <p>当同好会には、<strong>模型・乗り・描き・音・路線図etc...</strong> といった、多種多様な好みをお持ちの方々がいらっしゃいます。</p>
-            <p>なんと、「ジオラマを作りたい！」ということで入会してくださった方もいます。鉄道に詳しくない方、それほど趣味ではないという方も大歓迎です！気になった方は、ぜひお友達等と一緒に見学へお越しください！</p>
-        </section>
-        <section>
-            <h2>主な活動内容</h2>
-            <ul>
-                <li><strong>定期集会（月1〜2回）：</strong> Nゲージを走らせたり、最近の鉄道各社の情報を共有したりしています。</li>
-                <li><strong>イベント出展の準備：</strong> 学園祭や、8月に行われる「鉄道模型コンテスト」に出展するため、ただいま誠意製作中です！ジオラマを作ってみたいという方もぜひご検討ください。</li>
-            </ul>
-        </section>
-        <section>
-            <h2>📢 大注目プロジェクト始動！</h2>
-            <h3>「奈良から関西国際空港へ直通する、同好会オリジナルの鉄道会社」を製作開始！</h3>
-            <p>鉄道ファンだけでなく、誰もが楽しめる一大プロジェクトです。以下のような方も大活躍できます！</p>
-            <ul>
-                <li>🎨 <strong>イラストが得意な方：</strong> オリジナル車両や駅のデザインを描きたい方</li>
-                <li>🎵 <strong>音楽が好きな方：</strong> 発車メロディなどの作曲をしてみたい方</li>
-            </ul>
-            <p>「模型というより、ジオラマ製作といった感じでしょうか？」—— 鉄道がそれほど好きではないという方も、ものづくりとして楽しめるプロジェクトになっています！</p>
-        </section>
-        <section>
-            <h2>募集要項・よくある質問</h2>
-            <ul>
-                <li>💰 <strong>会費：</strong> 年600円</li>
-                <li>🔰 <strong>初心者大歓迎：</strong> 鉄道の知識がなくても全く大丈夫です！</li>
-            </ul>
-            <div class="notice-box">
-                <strong>⚠️ 交通費に関する大切なお知らせ：</strong><br>
-                同好会の会員で鉄道に乗りに行く場合、会費から交通費は出ません（個人旅行という名目で行っているためです）。会費によって格安で鉄道に乗れるというわけでは御座いませんので、あらかじめご了承下さい。
-            </div>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2026 奈良女子大学附属中等教育学校 鉄道同好会</p>
-        <div class="counter-area">
-            <span style="font-size: 0.8rem; color: #555;">乗車人数（アクセス数）</span><br>
-            <span style="font-weight: bold; color: #00539c; font-size: 1.2rem;">00001</span>
-        </div>
-    </footer>
-                `;
-            }
-
-            // 開いた瞬間に最優先でパスワード画面を起動
             askPassword();
         })();
     </script>
+
+    <style>
+        /* サイト全体の文字と背景 */
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', メイリオ, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ヘッダー：駅名標風デザイン */
+        header {
+            background-color: #00539c; 
+            color: white;
+            text-align: center;
+            padding: 50px 20px;
+            border-bottom: 8px solid #a3d1ff; 
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            letter-spacing: 2px;
+        }
+
+        header p {
+            margin: 10px 0 0 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* メインの文章部分 */
+        main {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* 各セクションの枠 */
+        section {
+            background: white;
+            padding: 30px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: #00539c;
+            border-left: 6px solid #00539c; 
+            padding-left: 12px;
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+
+        h3 {
+            color: #e67e22; 
+            font-size: 1.2rem;
+            margin-top: 20px;
+        }
+
+        /* 箇条書き */
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 12px;
+        }
+
+        /* 注意書き用のグレーのボックス */
+        .notice-box {
+            background-color: #f9f9f9;
+            border-left: 4px solid #95a5a6;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        /* フッター */
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        .counter-area {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            background: #eee;
+            border-radius: 6px;
+            display: inline-block;
+            min-width: 150px;
+        }
+    </style>
 </head>
-<body style="background: white; margin: 0; padding: 0;">
-    <!-- 最初の読み込み時は完全に真っ白（パスワード正解で中身が上書きされます） -->
-</body>
-</html>
+<body>
+
+    <!-- 💡 パスワードが正解するまで全体を非表示（display:none）にしておく安全設計 -->
+    <div id="main-wrapper" style="display: none;">
+        
+        <!-- ヘッダー -->
+        <header>
+            <h1>奈良女子大学附属中等教育学校<br>鉄道同好会</h1>
+            <p>〜 ゆる〜く、楽しく、活動しております 〜</p>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main>
+            <section>
+                <h2>同好会について</h2>
+                <p>当同好会には、<strong>模型・乗り・描き・音・路線図etc...</strong> といった、多種多様な好みをお持ちの方々がいらっしゃいます。</p>
+                <p>なんと、「ジオラマを作りたい！」ということで入会してくださった方もいます。鉄道に詳しくない方、それほど趣味ではないという方も大歓迎です！気になった方は、ぜひお友達等と一緒に見学へお越しください！</p>
+            </section>
+
+            <section>
+                <h2>主な活動内容</h2>
+                <ul>
+                    <li><strong>定期集会（月1〜2回）：</strong> Nゲージを走らせたり、最近の鉄道各社の情報を共有したりしています。</li>
+                    <li><strong>イベント出展の準備：</strong> 学園祭や、8月に行われる「鉄道模型コンテスト」に出展するため、ただいま誠意製作中です！ジオラマを作ってみたいという方もぜひご検討ください。</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>📢 大注目プロジェクト始動！</h2>
+                <h3>「奈良から関西国際空港へ直通する、同好会オリジナルの鉄道会社」を製作開始！</h3>
+                <p>鉄道ファンだけでなく、誰もが楽しめる一大プロジェクトです。以下のような方も大活躍できます！</p>
+                <ul>
+                    <li>🎨 <strong>イラストが得意な方：</strong> オリジナル車両や駅のデザインを描きたい方</li>
+                    <li>🎵 <strong>音楽が好きな方：</strong> 発車メロディなどの作曲をしてみたい方</li>
+                </ul>
+                <p>「模型というより、ジオラマ製作といった感じでしょうか？」—— 鉄道がそれほど好きではないという方も、ものづくりとして楽しめるプロジェクトになっています！</p>
+            </section>
+
+            <section>
+                <h2>募集要項・よくある質問</h2>
+                <ul>
+                    <li>💰 <strong>会費：</strong> 年600円</li>
+                    <li>🔰 <strong>初心者大歓迎：</strong> 鉄道の知識がなくても全く大丈夫です！</li>
