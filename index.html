@@ -182,6 +182,7 @@
             </div>
         </section>
         <footer>
+            <footer style="background-color: #00539c; color: white; text-align: center; padding: 40px 20px; margin-top: 30px; border-top: 8px solid #a3d1ff; position: absolute; left: 0; width: 100%; box-sizing: border-box;">
             <!-- ❶ 文字を表示する部屋（HTML） -->
             <div class="counter-area">
                 <span class="counter-label">🚉 乗車人数(延べ)</span><br>
@@ -189,6 +190,7 @@
             </div>
 
             <p>&copy; 2026 奈良女子大学附属中等教育学校 鉄道同好会</p>
+            <p>〒630-8305 奈良市東紀寺町1丁目60-1</p>
         </footer>
     </div>
 
@@ -211,5 +213,39 @@
             document.getElementById('visitor-count').innerText = String(count).padStart(5, '0');
         });
     </script>
+    
+        <!-- 🗼 上に戻るボタン（上り列車アイコン風デザイン） -->
+    <div id="scroll-to-top-btn" onclick="scrollToTop()" style="position: fixed; bottom: 25px; right: 25px; width: 50px; height: 50px; background-color: #00539c; color: white; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 2px solid white; z-index: 99999; opacity: 0; transition: opacity 0.3s, transform 0.2s; visibility: hidden;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1.0)'">
+        <span style="font-size: 1.1rem; font-weight: bold; line-height: 1;">▲</span>
+        <span style="font-size: 0.65rem; font-weight: bold; line-height: 1; margin-top: 2px;">上り</span>
+    </div>
+
+    <!-- ⚙️ ボタンを動かすプログラム -->
+    <script>
+        // 画面をスクロールしたときに、ボタンを出したり消したりする処理
+        window.addEventListener('scroll', () => {
+            const topBtn = document.getElementById('scroll-to-top-btn');
+            // 画面を 300ピクセル 以上下にスクロールしたらパッと出現させる
+            if (window.scrollY > 300) {
+                topBtn.style.visibility = 'visible';
+                topBtn.style.opacity = '1';
+            } else {
+                topBtn.style.opacity = '0';
+                // アニメーションが消えるのを待ってからクリック判定を消す
+                setTimeout(() => {
+                    if(window.scrollY <= 300) { topBtn.style.visibility = 'hidden'; }
+                }, 300);
+            }
+        });
+
+        // カチッと押したときに、一番上までスルスルと滑らかに戻る処理
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth' // スムーズにスクロールさせる設定
+            });
+        }
+    </script>
+
 </body>
 </html>
