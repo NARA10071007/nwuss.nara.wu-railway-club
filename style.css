@@ -1,0 +1,471 @@
+/* ==========================================
+   🔑 全体共通のスタイル（スッキリ爽やかなブルー基調）
+   ========================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f7f9fa;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ==========================================
+   📸 1. 山岡さん提案の「写真ヘッダー」CSS
+   ========================================== */
+.header-image-container {
+    position: relative;
+    width: 100%;
+    height: 350px; /* パソコン画面での写真の高さ */
+    overflow: hidden;
+}
+
+.header-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* どんな写真でも比率を崩さず綺麗に収める魔法のコード */
+    object-position: center;
+}
+
+/* 写真の上に文字を読みやすくするための黒いモヤ（オーバーレイ） */
+.header-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* 40%の黒透明 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+}
+
+.header-overlay h1 {
+    font-size: 2.2rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+    margin-bottom: 10px;
+}
+
+.header-overlay h1 span {
+    font-size: 2.8rem;
+    font-weight: bold;
+    color: #ffd700; /* 「鉄道同好会」を金色にして目立たせる */
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+}
+
+/* ==========================================
+   🧭 2. 複数ページを切り替えるメニュー（ナビゲーション）
+   ========================================== */
+.global-nav {
+    background-color: #004098; /* JR西日本のブルーをイメージ */
+    sticky: top;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.global-nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.global-nav li {
+    flex: 1;
+    text-align: center;
+}
+
+.global-nav a {
+    display: block;
+    padding: 15px 10px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.95rem;
+    transition: background 0.3s;
+}
+
+.global-nav a:hover, 
+.global-nav a.active {
+    background-color: #002d6b; /* ホバー時・現在地ページの色 */
+    border-bottom: 3px solid #ffd700;
+}
+
+/* ==========================================
+   📝 3. 各コンテンツの装飾
+   ========================================== */
+section {
+    background: #fff;
+    padding: 30px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+h2 {
+    color: #004098;
+    border-left: 5px solid #004098;
+    padding-left: 10px;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+/* お知らせリスト */
+.news-list {
+    list-style: none;
+}
+
+.news-list li {
+    padding: 12px 0;
+    border-bottom: 1px dashed #ddd;
+}
+
+.date {
+    color: #666;
+    margin-right: 15px;
+    font-weight: bold;
+}
+
+.badge {
+    background: #e63946;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+/* ボタンの装飾 */
+.btn {
+    display: inline-block;
+    background: #004098;
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 15px;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.btn:hover {
+    background: #002d6b;
+}
+
+.btn.secondary {
+    background: #5c677d;
+}
+
+.btn.secondary:hover {
+    background: #495057;
+}
+
+/* ==========================================
+   👣 4. フッター
+   ========================================== */
+.main-footer {
+    background: #2b2d42;
+    color: #adb5bd;
+    text-align: center;
+    padding: 40px 20px;
+    margin-top: 50px;
+    font-size: 0.9rem;
+}
+
+.footer-counter {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.map-link {
+    color: #ffd700;
+    text-decoration: none;
+}
+
+.map-link:hover {
+    text-decoration: underline;
+}
+
+.copyright {
+    margin-top: 20px;
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+/* 📱 スマホ用の表示微調整 */
+@media (max-width: 600px) {
+    .header-image-container { height: 250px; }
+    .header-overlay h1 { font-size: 1.6rem; }
+    .header-overlay h1 span { font-size: 2rem; }
+    .global-nav ul { flex-wrap: wrap; }
+    .global-nav li { flex: none; width: 33.33%; }
+    .global-nav a { font-size: 0.85rem; padding: 10px 5px; }
+}
+/* ==========================================
+   ✨ 紹介ページ用の追加デザイン
+   ========================================== */
+.welcome-box {
+    background-color: #e8f1f5;
+    border-left: 4px solid #2a9d8f;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 0 4px 4px 0;
+}
+
+.location-section ul {
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+.location-section li {
+    margin-bottom: 8px;
+}
+
+.schedule-placeholder {
+    background: #f8f9fa;
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    margin-top: 15px;
+    border-radius: 6px;
+}
+/* ==========================================
+   ✨ プロジェクトページ用の追加デザイン
+   ========================================== */
+.badge-project {
+    display: inline-block;
+    background: #ffd700;
+    color: #222;
+    padding: 5px 12px;
+    font-weight: bold;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+.project-roles {
+    background: #fdfaf0;
+    border: 1px solid #f3e5ab;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 6px;
+}
+
+.project-roles h3 {
+    color: #b76e00;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.project-roles ul {
+    margin-left: 20px;
+}
+
+.project-roles li {
+    margin-bottom: 8px;
+}
+
+.activity-card {
+    border-bottom: 1px dashed #ccc;
+    padding: 20px 0;
+}
+
+.activity-card:last-child {
+    border-bottom: none;
+}
+
+.activity-card h3 {
+    color: #004098;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.media-placeholder {
+    background: #e9ecef;
+    border: 2px dashed #ced4da;
+    padding: 30px;
+    text-align: center;
+    color: #6c757d;
+    margin-top: 20px;
+    border-radius: 6px;
+}
+/* ==========================================
+   ✨ ブログページ用の追加デザイン
+   ========================================== */
+.blog-lead {
+    margin-bottom: 30px;
+    color: #555;
+    font-size: 1.05rem;
+}
+
+.blog-post {
+    background: #fff;
+    padding: 35px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 40px;
+}
+
+.post-header {
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.post-date {
+    font-size: 0.9rem;
+    color: #888;
+    font-weight: bold;
+}
+
+.post-category {
+    background: #004098;
+    color: #fff;
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-left: 10px;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+.post-title {
+    font-size: 1.6rem;
+    color: #222;
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+.post-content p {
+    margin-bottom: 18px;
+    font-size: 1.05rem;
+    color: #333;
+    text-align: justify;
+}
+
+.post-image {
+    background: #f8f9fa;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    margin: 25px 0;
+    text-align: center;
+}
+
+.post-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+.image-caption {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 8px !important;
+    margin-bottom: 0 !important;
+}
+/* ==========================================
+   ✨ リンクページ用の追加デザイン
+   ========================================== */
+.links-lead {
+    margin-bottom: 25px;
+    color: #555;
+}
+
+.link-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.link-item {
+    display: flex;
+    align-items: flex-start;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.link-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.link-icon {
+    font-size: 2.5rem;
+    margin-right: 20px;
+    line-height: 1;
+}
+
+.link-info {
+    flex: 1;
+}
+
+.link-info h3 {
+    font-size: 1.2rem;
+    color: #222;
+    margin-bottom: 5px;
+}
+
+.link-info p {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.link-button {
+    display: inline-block;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: opacity 0.2s;
+}
+
+.link-button:hover {
+    opacity: 0.9;
+}
+
+/* 各ボタンの色分け（X、マシュマロ、学校） */
+.x-link .link-button { background-color: #111; }
+.marshmallow-link .link-button { background-color: #e295aa; }
+.school-link .link-button { background-color: #004098; }
+
+/* 📱 タブレット以上で2列に並べる */
+@media (min-width: 650px) {
+    .link-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+    .school-link {
+        grid-column: span 2; /* 学校HPだけ横いっぱいに広げる */
+    }
+}
