@@ -90,6 +90,52 @@
             <p class="copyright">&copy; 2026 奈良女子大学附属中等教育学校 鉄道同好会</p>
         </div>
     </footer>
+<!-- 上へ戻るボタン（青色・黒枠・丸型・▲と上り） -->
+<button id="scrollTopBtn" title="ページトップへ戻る" style="
+    display: none; 
+    position: fixed; 
+    bottom: 20px; 
+    right: 20px; 
+    z-index: 99; 
+    border: 1px solid #000000; 
+    outline: none; 
+    background-color: #007bff; 
+    color: white; 
+    cursor: pointer; 
+    padding: 0; 
+    border-radius: 50%; 
+    width: 60px; /* ★ 文字が収まるようにボタンを少しだけ大きく（50px→60px）しました */
+    height: 60px;
+    display: none; 
+    flex-direction: column; /* ★ 矢印と文字を縦に並べる設定 */
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: opacity 0.3s;
+    line-height: 1.2;
+">
+    <span style="font-size: 20px; margin-bottom: -2px;">▲</span>
+    <span style="font-size: 11px; font-weight: bold;">上り</span>
+</button>
 
+<!-- ボタンを動かす仕組み -->
+<script>
+const scrollTopBtn = document.getElementById("scrollTopBtn");
+
+window.onscroll = function() {
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+        scrollTopBtn.style.display = "flex";
+    } else {
+        scrollTopBtn.style.display = "none";
+    }
+};
+
+scrollTopBtn.addEventListener("click", function() {
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+});
+</script>
 </body>
 </html>
