@@ -497,22 +497,32 @@ h2 {
     padding-left: 0;
 }
 
-.blog-recent-list li {
-    padding: 8px 0;
-    border-bottom: 1px dashed #cbd5e1;
-    font-size: 1rem;
+.blog-recent-list {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;   /* 👈 左側の余計な隙間をなくす */
 }
 
-.blog-recent-list li:last-child {
-    border-bottom: none;
+.blog-recent-list li {
+    padding: 10px 0;
+    border-bottom: 1px dashed #cbd5e1;
+    font-size: 0.95rem; /* 👈 スマホで文字が溢れないよう少し小さめに */
+    line-height: 1.4;
+    display: flex;       /* 👈 日付とタイトルを綺麗に並べる */
+    align-items: flex-start;
 }
 
 .recent-date {
     color: #666;
     font-weight: bold;
-    margin-right: 10px;
-    font-size: 0.9rem;
+    margin-right: 12px;
+    font-size: 0.85rem;
+    white-space: nowrap; /* 👈 日付が途中で改行されるのを防ぐ */
+    background: #e2e8f0; /* 👈 日付を少し目立たせるグレーの背景 */
+    padding: 2px 6px;
+    border-radius: 4px;
 }
+
 
 .blog-recent-list a {
     color: #333;
