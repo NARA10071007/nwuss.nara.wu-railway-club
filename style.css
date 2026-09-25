@@ -1,3 +1,9 @@
+/* ページ内のリンク移動を滑らかにする魔法のコード */
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 60px; /* メニューバーにタイトルが被るのを防ぐ隙間 */
+}
+
 /* ==========================================
    🔑 全体共通のスタイル（スッキリ爽やかなブルー基調）
    ========================================== */
@@ -468,4 +474,70 @@ h2 {
     .school-link {
         grid-column: span 2; /* 学校HPだけ横いっぱいに広げる */
     }
+}
+/* ==========================================
+   🗒 直近5件のブログ目次デザイン
+   ========================================== */
+.blog-recent-container {
+    background: #e8f1f5;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    border-left: 5px solid #004098;
+}
+
+.blog-recent-container h3 {
+    font-size: 1.1rem;
+    color: #004098;
+    margin-bottom: 12px;
+}
+
+.blog-recent-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.blog-recent-list li {
+    padding: 8px 0;
+    border-bottom: 1px dashed #cbd5e1;
+    font-size: 1rem;
+}
+
+.blog-recent-list li:last-child {
+    border-bottom: none;
+}
+
+.recent-date {
+    color: #666;
+    font-weight: bold;
+    margin-right: 10px;
+    font-size: 0.9rem;
+}
+
+.blog-recent-list a {
+    color: #333;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+
+.blog-recent-list a:hover {
+    color: #e63946;
+    text-decoration: underline;
+}
+
+.all-archive-link {
+    margin-top: 15px;
+    text-align: right;
+    font-size: 0.95rem;
+}
+
+.all-archive-link a {
+    color: #004098;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.all-archive-link a:hover {
+    text-decoration: underline;
 }
