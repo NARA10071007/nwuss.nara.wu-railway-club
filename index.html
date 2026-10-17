@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 💡 万が一JavaScriptが動かない環境用 -->
+    <meta http-equiv="refresh" content="5;url=https://nwuss-railway-club.github.io/Home_page-nwuss-railway-club/">
+    
+    <title>ホームページ移転のお知らせ</title>
+    <style>
+        /* 🎨 元のサイトの爽やかなブルー基調のデザインを継承 */
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f7f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            max-width: 500px;
+            width: 90%;
+        }
+        h1 {
+            color: #004098; /* 同好会ブルー */
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.05rem;
+            color: #333;
+            margin-bottom: 25px;
+        }
+        /* 🔗 新しいサイトへ行くボタン */
+        .btn {
+            display: inline-block;
+            background: #004098;
+            color: #fff;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background: #002d6b;
+        }
+        .notice {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 25px;
+        }
+        /* ⏳ カウントダウンの数字を目立たせるスタイル */
+        #countdown {
+            font-weight: bold;
+            color: #e63946; /* お知らせバッジと同じ赤色 */
+            font-size: 1.2rem;
+            margin: 0 2px;
+        }
+        /* ⚖️ 最下部に入れる控えめな免責事項エリア */
+        .disclaimer-box {
+            margin-top: 35px;
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+            font-size: 0.75rem;
+            color: #6c757d;
+            text-align: left;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>ホームページ移転のお知らせ</h1>
+        <p>
+            当ホームページは新しいアドレスへ移動しました。<br>
+        </p>
+        
+        <!-- 💡 移転先のURL -->
+        <a href="https://nwuss-railway-club.github.io/Home_page-nwuss-railway-club/" class="btn">新しいサイトへ移動する</a>
+        
+        <!-- ⏳ JavaScriptでここの数字がリアルタイムに減っていきます -->
+        <p class="notice">※ <span id="countdown">5</span>秒後に自動的に新しいサイトへ移動します。</p>
+
+        <!-- ⚖️ 免責事項の一言を追加 -->
+        <div class="disclaimer-box">
+            <strong>免責事項：</strong><br>
+            移動先のサイト（外部サイト）で提供される情報やサービス等によって生じたトラブル・損失・損害について、当同好会および学校側は一切の責任を負いかねますのであらかじめご了承ください。
+        </div>
+    </div>
+
+    <script>
+        // 🛠 設定エリア：移動させたい新しいサイトのURLをここに貼ってください
+        const newUrl = "https://nwuss-railway-club.github.io/Home_page-nwuss-railway-club/";
+        
+        // ⏳ カウントダウン（秒数）の設定
+        let timeLeft = 5; 
+        const countdownElement = document.getElementById("countdown");
+
+        const timer = setInterval(() => {
+            timeLeft--;
+            countdownElement.textContent = timeLeft; // 画面の数字を書き換え
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                window.location.href = newUrl; // 新しいURLにジャンプ
+            }
+        }, 1000); // 1秒ごとに実行
+    </script>
+
+</body>
+</html>
